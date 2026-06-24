@@ -3,6 +3,9 @@
 struct IComponentAdaptor
 {
 public:
+	/** virtual destructor so derived components can be deleted through a base pointer */
+	virtual ~IComponentAdaptor();
+
 	/** initialize with source resistor R1 */
 	virtual void initialize(double);
 
@@ -717,6 +720,10 @@ struct WdfAdaptorBase : public IComponentAdaptor
 public:
 	WdfAdaptorBase();
 	virtual ~WdfAdaptorBase();
+
+	// --- owns wdfComponent (a raw new'd pointer); non-copyable to avoid double-free
+	WdfAdaptorBase(const WdfAdaptorBase&) = delete;
+	WdfAdaptorBase& operator=(const WdfAdaptorBase&) = delete;
 
 	/** set the termainal (load) resistance for terminating adaptors */
 	void setTerminalResistance(double );

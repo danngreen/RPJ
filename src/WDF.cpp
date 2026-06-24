@@ -1,5 +1,7 @@
 #include "WDF.hpp"
 
+IComponentAdaptor::~IComponentAdaptor() {}
+
 /** initialize with source resistor R1 */
 void IComponentAdaptor::initialize(double _R1) {}
 
@@ -801,7 +803,7 @@ WdfComponentInfo::WdfComponentInfo(wdfComponentType _componentType, double value
 }
 
 WdfAdaptorBase::WdfAdaptorBase() {}
-WdfAdaptorBase::~WdfAdaptorBase() {}
+WdfAdaptorBase::~WdfAdaptorBase() { delete wdfComponent; }
 
 /** set the termainal (load) resistance for terminating adaptors */
 void WdfAdaptorBase::setTerminalResistance(double _terminalResistance) { terminalResistance = _terminalResistance; }
@@ -835,6 +837,10 @@ void WdfAdaptorBase::reset(double _sampleRate) {
 /** creates a new WDF component and connects it to Port 3 */
 void WdfAdaptorBase::setComponent(wdfComponentType componentType, double value1 = 0.0, double value2 = 0.0)
 {
+	// --- free any previously created component (createWDF may be called more than once)
+	delete wdfComponent;
+	wdfComponent = nullptr;
+
 	// --- decode and set
 	if (componentType == wdfComponentType::R)
 	{
